@@ -53,7 +53,7 @@ const Hero = () => {
           {/* Video content area */}
           <div className="grid md:grid-cols-2 md:grid-rows-2 gap-4 w-full md:h-[70vh] rounded-3xl p-4 relative">
             {/* Static grid videos */}
-            <div className="w-full h-full">
+            {/* <div className="w-full h-full">
               <video 
                 src="/videos/vitmun.mp4"
                 className="w-full h-full object-cover rounded-xl"
@@ -84,7 +84,7 @@ const Hero = () => {
             
             <div className="w-full h-full rounded-xl bg-gray-200 flex items-center justify-center">
               <p className="text-gray-500">Coming Soon</p>
-            </div>
+            </div> */}
           </div>
           
           {/* <div className="absolute -bottom-12 -right-12 w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-lg">
