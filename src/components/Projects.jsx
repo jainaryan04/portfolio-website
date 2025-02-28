@@ -3,27 +3,37 @@ import { useEffect, useState } from "react";
 
 export default function ProjectShowcase() {
   const [scrollY, setScrollY] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState(0);
   
   useEffect(() => {
+    const updateViewportDimensions = () => {
+      setViewportHeight(window.innerHeight);
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    updateViewportDimensions();
+    
     const handleScroll = () => {
       setScrollY(window.scrollY);
     };
     
+    window.addEventListener("resize", updateViewportDimensions);
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    
+    return () => {
+      window.removeEventListener("resize", updateViewportDimensions);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
-  // Calculate required heights
-  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 0;
-  const projectHeight = viewportHeight * 2; // Each project takes 2x viewport height
-  const totalHeight = viewportHeight + (projects.length * projectHeight); // Initial viewport + projects
+  const projectHeight = isMobile ? viewportHeight * 1.2 : viewportHeight * 2; 
+  const totalHeight = viewportHeight + (projects.length * projectHeight); 
 
   return (
     <div className="relative">
-      {/* Scrollable container */}
       <div style={{ height: `${totalHeight}px` }}></div>
 
-      {/* Fixed content container */}
       <div className="fixed top-0 left-0 w-full h-screen">
         {projects.map((project, index) => (
           <ProjectCard
@@ -33,6 +43,7 @@ export default function ProjectShowcase() {
             scrollY={scrollY}
             viewportHeight={viewportHeight}
             projectHeight={projectHeight}
+            isMobile={isMobile}
           />
         ))}
       </div>
@@ -40,115 +51,132 @@ export default function ProjectShowcase() {
   );
 }
 
-function ProjectCard({ project, index, scrollY, viewportHeight, projectHeight }) {
-  // Calculate the start and end positions for this project
+function ProjectCard({ project, index, scrollY, viewportHeight, projectHeight, isMobile }) {
   const projectStart = viewportHeight + (index * projectHeight);
   const projectEnd = projectStart + projectHeight;
   
-  // Calculate where we are in this project's scroll range (0 to 1)
   const projectProgress = Math.max(0, Math.min(1, 
     (scrollY - projectStart) / projectHeight
   ));
   
-  // Determine if this project is active
   const isBeforeActive = scrollY < projectStart;
   const isActive = scrollY >= projectStart && scrollY < projectEnd;
   const isAfterActive = scrollY >= projectEnd;
   
-  // Define animation stages more clearly
-  // Stage 1 (0-0.3): Image centered and growing
-  // Stage 2 (0.3-0.6): Image moving to corner
-  // Stage 3 (0.6-1.0): Content visible, then fading
-
   let imageScale = 1;
   let imageX = 0;
   let imageY = 0;
   let contentOpacity = 0;
   let cardOpacity = 0;
 
+  const mobileTransformAmount = isMobile ? 20 : 40;
+  const mobileScaleAmount = isMobile ? 0.7 : 0.5;
+
   if (isActive) {
-    // Stage 1: Center and grow
     if (projectProgress < 0.3) {
-      imageScale = 1 + (projectProgress / 0.3); // Scale from 1 to 2
+      imageScale = 1; 
       imageX = 0;
       imageY = 0;
       contentOpacity = 0;
-      cardOpacity = projectProgress / 0.3; // Fade in card
+      cardOpacity = projectProgress / 0.3; 
     }
-    // Stage 2: Move to corner
+    
     else if (projectProgress < 0.6) {
       const stageProgress = (projectProgress - 0.3) / 0.3;
-      imageScale = 2 - stageProgress; // Scale from 2 to 1
-      imageX = -50 * stageProgress; // Move left
-      imageY = -50 * stageProgress; // Move up
-      contentOpacity = 0;
+      imageScale = 1 - ((1 - mobileScaleAmount) * stageProgress); 
+      imageX = -mobileTransformAmount * stageProgress; 
+      imageY = isMobile ? 0 : (-mobileTransformAmount * stageProgress); 
+      contentOpacity = stageProgress; 
       cardOpacity = 1;
     }
-    // Stage 3: Show content, then all fade out
     else {
       const stageProgress = (projectProgress - 0.6) / 0.4;
-      imageScale = 1;
-      imageX = -50;
-      imageY = -50;
-      contentOpacity = Math.min(1, stageProgress * 2); // Content appears in first half
-      cardOpacity = projectProgress > 0.9 ? 1 - ((projectProgress - 0.9) * 10) : 1; // Quick fade at end
+      imageScale = mobileScaleAmount;
+      imageX = -mobileTransformAmount;
+      imageY = isMobile ? 0 : -mobileTransformAmount;
+      contentOpacity = 1; 
+      cardOpacity = projectProgress > 0.9 ? 1 - ((projectProgress - 0.9) * 10) : 1; 
     }
   } else if (isBeforeActive) {
-    // Wait to appear
     cardOpacity = 0;
   } else if (isAfterActive) {
-    // Fully hidden after completion
     cardOpacity = 0;
   }
 
   if (!isActive && !isBeforeActive && scrollY > projectStart - viewportHeight / 2 && scrollY < projectStart) {
-    // Pre-load next project with slight visibility
     cardOpacity = 0.1;
   }
 
   return (
     <div
-      className="absolute top-0 left-0 w-full h-screen flex items-center justify-center transition-opacity duration-500"
+      className="absolute top-0 left-0 w-full h-screen flex items-center justify-center transition-opacity duration-500 bg-black"
       style={{
         opacity: cardOpacity,
         visibility: cardOpacity > 0 ? 'visible' : 'hidden',
-        zIndex: 100 - index, // Higher index = lower layer
+        zIndex: 100 - index, 
       }}
     >
-      {/* Project image */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <img
-          src={project.image}
-          alt={project.title}
-          className="transition-all duration-700 object-cover"
-          style={{
-            maxWidth: '70vw',
-            maxHeight: '70vh',
-            transform: `translate(${imageX}%, ${imageY}%) scale(${imageScale})`,
-            transformOrigin: 'center',
-          }}
-        />
+      <div className={`absolute inset-0 flex items-center justify-center`} style={{ zIndex: 200 }}>
+        <a href={project.link} target="_blank" rel="noopener noreferrer">
+          <img
+            src={project.image}
+            alt={project.title}
+            className="transition-all duration-700 object-cover"
+            style={{
+              maxWidth: isMobile ? '85vw' : '70vw',
+              maxHeight: isMobile ? '40vh' : '70vh',
+              transform: `translate(${imageX}%, ${imageY}%) scale(${imageScale})`,
+              transformOrigin: isMobile ? 'center top' : 'center',
+            }}
+          />
+        </a>
       </div>
 
-      {/* Project details */}
       <div
-        className="absolute top-1/4 right-8 w-1/3 text-white bg-black bg-opacity-70 p-6 rounded-lg transition-all duration-500"
+        className={`absolute inset-0 text-white bg-black bg-opacity-70 transition-all duration-500 flex flex-col justify-center ${
+          isMobile ? 'p-4 pt-64' : 'p-8'
+        }`}
         style={{
           opacity: contentOpacity,
-          transform: `translateX(${(1 - contentOpacity) * 50}px)`,
+          transform: isMobile 
+            ? `translateY(${(1 + contentOpacity) * 50}px)`
+            : `translateX(${(1 + contentOpacity) * 50}px)`,
+          zIndex: 150,
         }}
       >
-        <h2 className="text-2xl font-bold mb-4">{project.title}</h2>
-        <p className="mb-4">{project.description}</p>
-        <div className="flex flex-wrap gap-2">
-          {project.techStack.map((tech) => (
-            <span
-              key={tech}
-              className="px-3 py-1 bg-gray-800 rounded-full text-sm"
+        <div className={`${isMobile ? 'max-w-full mx-4' : 'max-w-2xl '} md:mt-64 md:-ml-12`}>
+          <h2 className={`md:text-[6vh] font-bold mb-3`}>{project.title}</h2>
+          <p className={`mb-3 md:text-[3vh]`}>{project.description}</p>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {project.techStack.map((tech) => (
+              <span
+                key={tech}
+                className="p-4 bg-gray-800 rounded-full text-xl"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+          {/* <div className="space-x-4">
+          <a 
+              href={project.repo} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block mt-2 px-4 py-2 bg-blue-600 rounded-md text-white font-medium"
             >
-              {tech}
-            </span>
-          ))}
+              View Repository
+            </a>
+
+
+            <a 
+              href={project.repo} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block mt-2 px-4 py-2 bg-blue-600 rounded-md text-white font-medium"
+            >
+              View Repository
+            </a>
+            </div> */}
         </div>
       </div>
     </div>
@@ -158,30 +186,29 @@ function ProjectCard({ project, index, scrollY, viewportHeight, projectHeight })
 const projects = [
   { 
     id: "project1", 
-    title: "E-Commerce Dashboard", 
-    description: "A responsive dashboard for monitoring sales and inventory with real-time updates.", 
+    title: "VIT Model United Nations", 
+    description: "A responsive website for delegate registration and portfolio allotment for the MUN organised by the Department of Students' Welfare.", 
     image: "/images/vitmun.png", 
-    techStack: ["React", "Node.js", "MongoDB", "Chart.js"] 
+    techStack: ["Next", "Tailwind CSS", "TypeScript"] ,
+    link:"https://vitmun.vit.ac.in",
+    repo:"https://github.com/nervewastaken/vitmun-25"
   },
   { 
     id: "project2", 
-    title: "Weather App", 
-    description: "Location-based weather forecasting with animated visualizations.", 
+    title: "Enrollments Website", 
+    description: "Enrollments website for the IEEE CS Chapter for 2025.", 
     image: "/images/enrollments.png", 
-    techStack: ["JavaScript", "OpenWeather API", "CSS3"] 
+    techStack: ["FAST API", "DynamoDB", "S3"],
+    link:"https://enrollments.ieeecsvit.com",
+    repo:"https://github.com/IEEECS-VIT/enrollments-2025-backend"
   },
   { 
     id: "project3", 
-    title: "Task Management System", 
-    description: "Collaborative project management tool with kanban boards and team chat.", 
-    image: "/images/task-app.jpg", 
-    techStack: ["TypeScript", "React", "Firebase", "Tailwind CSS"],
-  },
-  {
-    id: "project4",
-    title: "Fitness Tracker", 
-    description: "Mobile application for tracking workouts and nutrition with personalized goals.",
-    image: "/images/fitness-app.jpg",
-    techStack: ["React Native", "Redux", "Express", "SQL"],
+    title: "UrjaCart", 
+    description: "E Commerce website for a Lucknow based company", 
+    image: "/images/urjacart.png", 
+    techStack: ["React", "Firebase", "Tailwind CSS","Retool"],
+    link:"https://shop.urjacart.com",
+    repo:"https://github.com/CarbexOfficial/UrjacartWebsite"
   },
 ];
