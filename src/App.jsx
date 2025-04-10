@@ -7,7 +7,6 @@ function App() {
 
   useEffect(() => {
     const GA_ID = import.meta.env.VITE_GA_ID;
-    console.log(GA_ID);
     const script = document.createElement('script');
     script.setAttribute('async', '');
     script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
