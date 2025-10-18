@@ -154,7 +154,7 @@ export default function ProjectShowcase() {
               }`}
             >
               <img
-                src="/images/slot.png"
+                src="/images/slot-nobg.png"
                 alt="Slot Machine Handle"
                 className="w-48 h-40 object-contain drop-shadow-lg"
               />
@@ -206,8 +206,12 @@ export default function ProjectShowcase() {
         {projects.map((project, i) => (
           <section
             key={project.id}
-            ref={(el) => (projectRefs.current[i] = el)}
-            className="h-screen w-full flex items-center justify-center px-6 bg-black text-white flex-shrink-0" 
+            // ref={(el) => (projectRefs.current[i] = el)}
+            ref={(el) => {
+              projectRefs.current[i] = el as HTMLDivElement;
+            }}
+            
+            className="h-screen w-full flex items-center justify-center px-6 bg-[#0A192F] text-white flex-shrink-0" 
           >
             <div className="flex flex-col md:flex-row gap-12 items-center justify-center max-w-7xl w-full"> {/* Increased gap and max-w-7xl, added w-full */}
               <a
@@ -224,12 +228,12 @@ export default function ProjectShowcase() {
               </a>
               <div className="w-full md:w-1/2 space-y-6"> {/* Increased space-y for more vertical separation */}
                 <h2 className="text-5xl font-bold md:text-6xl">{project.title}</h2> {/* Increased title size */}
-                <p className="text-xl md:text-2xl">{project.description}</p> {/* Increased description size */}
+                <p className="text-xl md:text-2xl font-satoshi">{project.description}</p> {/* Increased description size */}
                 <div className="flex flex-wrap gap-4"> {/* Increased gap for tech stack */}
                   {project.techStack.map((tech) => (
                     <span
                       key={tech}
-                      className="bg-gray-800 rounded-full px-5 py-2 text-base md:text-lg" // Increased tech stack padding and text size
+                      className="bg-orange-400 rounded-full px-5 py-2 text-base md:text-lg cursor-pointer" // Increased tech stack padding and text size
                     >
                       {tech}
                     </span>

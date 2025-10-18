@@ -1,11 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 export default function PageTransitionWrapper({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
+  const pathname = usePathname();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function PageTransitionWrapper({ children }: { children: React.Re
         { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
       );
     }
-  }, [router.pathname]);
+  }, [pathname]);
 
   return (
     <main ref={ref} style={{ position: "relative", zIndex: 1 }}>

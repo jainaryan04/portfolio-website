@@ -15,7 +15,7 @@ const Hero = () => {
       ease: "power2.inOut",
     });
 
-    let split = SplitText.create(".split-text", { type: "words, chars" });
+    const split = SplitText.create(".split-text", { type: "words, chars" });
 
     gsap.from(split.chars, {
       duration: 0.8,

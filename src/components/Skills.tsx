@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef, RefObject } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import Image from 'next/image';
 
 type SkillsProps = {
   media: string[];
@@ -65,10 +66,12 @@ const Skills: React.FC<SkillsProps> = ({
           playsInline
         />
       ) : (
-        <img
+        <Image
           src={currentMedia}
+          width={128}
+          height={128}
           alt="Following cursor"
-          className="max-h-32 object-cover rounded-xl"
+          className="object-cover rounded-xl"
         />
       )}
     </div>
