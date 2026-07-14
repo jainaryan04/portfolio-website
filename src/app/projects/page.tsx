@@ -1,36 +1,27 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import { RoughEase } from "gsap/dist/EasePack"; // Import RoughEase for the jitter effect
-
-gsap.registerPlugin(ScrollTrigger, RoughEase); // Register RoughEase
+import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 
 const projects = [
   {
-    id: "project1",
     title: "VIT Model United Nations",
     description:
-      "A responsive website for delegate registration and portfolio allotment for the MUN organised by the Department of Students' Welfare.",
+      "A responsive registration platform for one of the largest student-led conferences on campus.",
     image: "/images/vitmun.png",
-    techStack: ["Next", "Tailwind CSS", "TypeScript"],
-    link: "https://vitmun.vit.ac.in",
+    techStack: ["Next.js", "Tailwind CSS", "TypeScript"],
+    link: "https://vitmun-25.vercel.app/",
     repo: "https://github.com/nervewastaken/vitmun-25",
   },
   {
-    id: "project2",
     title: "Enrollments Website",
-    description: "Enrollments website for the IEEE CS Chapter for 2025.",
+    description: "Designed fault-tolerant backend services using FastAPI and AWS DynamoDB to manage recruitment for 1000+ applicants.",
     image: "/images/enrollments.png",
-    techStack: ["FAST API", "DynamoDB", "S3"],
+    techStack: ["FastAPI", "DynamoDB", "S3"],
     link: "https://enrollments.ieeecsvit.com",
     repo: "https://github.com/IEEECS-VIT/enrollments-2025-backend",
   },
   {
-    id: "project3",
     title: "UrjaCart",
-    description: "E Commerce website for a Lucknow based company",
+    description: "An e-commerce experience for a growing retail brand, focusing on clarity, conversion, and storytelling.",
     image: "/images/urjacart.png",
     techStack: ["React", "Firebase", "Tailwind CSS", "Retool"],
     link: "https://shop.urjacart.com",
@@ -38,220 +29,91 @@ const projects = [
   },
 ];
 
-export default function ProjectShowcase() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const projectRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [currentProject, setCurrentProject] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const handleRef = useRef<HTMLDivElement>(null);
-
-  // Function to scroll to a specific project with funky animation
-  const scrollToProject = (index: number) => {
-    if (containerRef.current && projectRefs.current[index]) {
-      const targetElement = projectRefs.current[index];
-      const targetScrollTop = targetElement.offsetTop;
-      const currentScrollTop = containerRef.current.scrollTop;
-      // const viewportHeight = window.innerHeight; // Not directly used for scroll calculation in this version
-
-      // Calculate a "halfway" point for the scroll relative to the current and target
-      const halfwayScroll = currentScrollTop + (targetScrollTop - currentScrollTop) * 0.4; // Scroll 40% of the way
-
-      const tl = gsap.timeline({
-        onStart: () => {
-          setIsAnimating(true); // Prevent further pulls during this animation sequence
-        },
-        onComplete: () => {
-          setCurrentProject(index); // Update current project after the full animation
-          setIsAnimating(false); // Allow handle pulls again
-        }
-      });
-
-      tl.to(containerRef.current, {
-        scrollTop: halfwayScroll,
-        duration: 0.5, // Smooth scroll to halfway
-        ease: "power2.out",
-      })
-      .to(containerRef.current, {
-        // Jitter effect - this will apply small, quick movements to the container
-        // It's a visual shake, not a major scroll
-        x: 'random(-5, 5)', // Random horizontal jitter
-        y: 'random(-5, 5)', // Random vertical jitter
-        repeat: 5, // Repeat 5 times for a noticeable shake
-        yoyo: true, // Go back and forth for a cleaner jitter
-        duration: 0.08, // Very fast individual jitter movements
-        ease: "power1.inOut", // Simple ease for quick movements
-      })
-      .to(containerRef.current, {
-        scrollTop: targetScrollTop,
-        duration: 0.8, // Smooth scroll to the final target
-        ease: "power2.inOut",
-        x: 0, // Ensure x/y reset after jitter
-        y: 0,
-      }, ">-0.2"); // Start final scroll slightly before jitter animation technically ends for continuity
-    }
-  };
-
-  // Effect to disable manual scrolling and ensure initial project display
-  useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      // Disable manual scroll
-      container.style.overflowY = 'hidden';
-
-      // Set initial scroll position to the first project to ensure it's visible
-      // This is a direct set, not an animation, to prevent initial scroll issues
-      if (projectRefs.current[0]) {
-        container.scrollTop = projectRefs.current[0].offsetTop;
-        setCurrentProject(0);
-      }
-    }
-
-    return () => {
-      if (container) {
-        // Re-enable scroll if component unmounts (optional, for cleanup)
-        container.style.overflowY = 'scroll';
-      }
-    };
-  }, []); // Run only once on mount
-
-  const handleSlotPull = () => {
-    if (isAnimating) return; // Prevent multiple pulls if an animation is in progress
-    
-    // Animate handle pull down and up
-    if (handleRef.current) {
-      gsap.to(handleRef.current, {
-        y: 20,
-        duration: 0.2,
-        ease: "power2.out",
-        onComplete: () => {
-          gsap.to(handleRef.current, {
-            y: 0,
-            duration: 0.3,
-            ease: "elastic.out(1, 0.5)",
-            onComplete: () => {
-              const nextIndex = (currentProject + 1) % projects.length;
-              scrollToProject(nextIndex); // Trigger the funky scroll animation
-            }
-          });
-        }
-      });
-    }
-  };
-
+export default function ProjectsPage() {
   return (
-    <div className="relative">
-      {/* Slot Machine Navigation */}
-      <div className="fixed left-6 top-1/2 transform -translate-y-1/2 z-50 flex flex-col items-center">
-        {/* Slot Machine Body */}
-        <div className="">
-          {/* Slot Machine Handle */}
-          <div className="flex justify-center mb-4">
-            <div
-              ref={handleRef}
-              onClick={handleSlotPull}
-              className={`cursor-pointer transform transition-transform duration-100 ${
-                isAnimating ? 'pointer-events-none' : 'hover:scale-105' // Disable pointer events if animating
-              }`}
-            >
-              <img
-                src="/images/slot-nobg.png"
-                alt="Slot Machine Handle"
-                className="w-48 h-40 object-contain drop-shadow-lg"
-              />
-            </div>
+    <div className="min-h-screen bg-[#f7f8fc] text-slate-900">
+      <section className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-6 py-8 sm:px-10 lg:px-8 lg:py-10 lg:pr-24">
+        {/* <div className="mb-8 inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium uppercase tracking-[0.3em] text-slate-600 shadow-sm">
+          Projects
+        </div> */}
+
+        {/* <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <h1 className="text-4xl font-black leading-tight sm:text-5xl">
+              Selected work shaped for clarity and impact.
+            </h1>
+            <p className="mt-5 text-lg leading-8 text-slate-600">
+              Each project here reflects a balance of strong visual direction, clear information hierarchy, and reliable implementation.
+            </p>
           </div>
+          <div className="rounded-full bg-blue-50 px-4 py-2 text-sm font-medium text-blue-700">
+            Built with modern frontend and backend tooling
+          </div>
+        </div> */}
 
-          {/* Project Display Window */}
-          {/* <div className="bg-black rounded-lg p-3 border-2 border-gray-300 mb-4">
-            <div className="flex flex-col items-center space-y-2">
-              {projects.map((_, index) => (
-                <div
-                  key={index}
-                  className={`w-6 h-6 rounded-full transition-all duration-300 ${
-                    index === currentProject
-                      ? 'bg-green-400 shadow-lg shadow-green-400/50 animate-pulse'
-                      : 'bg-gray-600'
-                  }`}
-                />
-              ))}
-            </div>
-          </div> */}
-
-          {/* Status Display */}
-          {/* <div className="bg-black rounded px-3 py-2 border border-gray-300">
-            <div className="text-center">
-              <div className="text-green-400 text-xs font-mono mb-1">
-                {isAnimating ? 'PULLING...' : 'READY'}
-              </div>
-              <div className="text-yellow-400 text-sm font-bold">
-                {String(currentProject + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
-              </div>
-            </div>
-          </div> */}
-        </div>
-
-        {/* Instructions */}
-        <div className="mt-4 bg-gray-900/90 backdrop-blur-sm rounded-lg px-3 py-2 border border-gray-700">
-          <span className="text-white text-xs text-center block">
-            Pull Handle to Spin
-          </span>
-        </div>
-      </div>
-
-      {/* Project Container */}
-      <div
-        ref={containerRef}
-        className="h-screen w-full flex flex-col" 
-      >
-        {projects.map((project, i) => (
-          <section
-            key={project.id}
-            // ref={(el) => (projectRefs.current[i] = el)}
-            ref={(el) => {
-              projectRefs.current[i] = el as HTMLDivElement;
-            }}
-            
-            className="h-screen w-full flex items-center justify-center px-6 bg-[#0A192F] text-white flex-shrink-0" 
-          >
-            <div className="flex flex-col md:flex-row gap-12 items-center justify-center max-w-7xl w-full"> {/* Increased gap and max-w-7xl, added w-full */}
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full md:w-1/2 flex justify-center" // Added flex justify-center to center image if it doesn't fill
-              >
-                <img
+        <div className="w-full mt-6 grid gap-6 lg:grid-cols-3">
+          {projects.map((project) => (
+            <article
+              key={project.title}
+              className="group flex h-full flex-col rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <div className="overflow-hidden rounded-[1.25rem] border border-slate-200 bg-slate-50">
+                <Image
                   src={project.image}
                   alt={project.title}
-                  className="rounded-xl shadow-lg object-contain w-full h-[75vh]" // Increased image height
+                  width={800}
+                  height={600}
+                  className="h-56 w-full object-cover transition duration-500 group-hover:scale-[1.02]"
                 />
-              </a>
-              <div className="w-full md:w-1/2 space-y-6"> {/* Increased space-y for more vertical separation */}
-                <h2 className="text-5xl font-bold md:text-6xl">{project.title}</h2> {/* Increased title size */}
-                <p className="text-xl md:text-2xl font-satoshi">{project.description}</p> {/* Increased description size */}
-                <div className="flex flex-wrap gap-4"> {/* Increased gap for tech stack */}
+              </div>
+
+              <div className="mt-6 flex flex-1 flex-col">
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-xl font-semibold text-slate-900">{project.title}</h2>
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white transition hover:bg-slate-700"
+                    aria-label={`Open ${project.title}`}
+                  >
+                    <ArrowUpRight className="h-4 w-4" />
+                  </a>
+                </div>
+
+                <p className="mt-3 min-h-24 text-sm leading-7 text-slate-600">{project.description}</p>
+
+                <div className="mt-4 flex flex-wrap gap-2">
                   {project.techStack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="bg-orange-400 rounded-full px-5 py-2 text-base md:text-lg cursor-pointer" // Increased tech stack padding and text size
-                    >
+                    <span key={tech} className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">
                       {tech}
                     </span>
                   ))}
                 </div>
-                <a
-                  href={project.repo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block mt-4 px-8 py-3 bg-blue-600 rounded-md hover:bg-blue-700 transition text-lg font-medium" // Increased button padding and text size
-                >
-                  View Repository
-                </a>
+
+                <div className="mt-auto flex flex-wrap gap-3 pt-6">
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
+                  >
+                    Visit site
+                  </a>
+                  <a
+                    href={project.repo}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-900 hover:text-slate-900"
+                  >
+                    View repo
+                  </a>
+                </div>
               </div>
-            </div>
-          </section>
-        ))}
-      </div>
+            </article>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
