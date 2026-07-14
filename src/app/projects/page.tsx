@@ -32,7 +32,7 @@ const projects = [
 export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-[#f7f8fc] text-slate-900">
-      <section className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-6 py-8 sm:px-10 lg:px-8 lg:py-10 lg:pr-24">
+      <section className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 py-8 sm:px-6 md:px-8 md:pl-28 lg:px-8 lg:py-10 lg:pr-24">
         {/* <div className="mb-8 inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium uppercase tracking-[0.3em] text-slate-600 shadow-sm">
           Projects
         </div> */}

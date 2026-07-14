@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ArrowUpRight, Mail, Linkedin, Github } from "lucide-react";
 
 const links = [
@@ -25,7 +24,7 @@ const links = [
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-[#f7f8fc] text-slate-900">
-      <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-20 sm:px-10 lg:px-8 lg:py-28 lg:pr-24">
+      <section className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-4 py-16 sm:px-6 md:px-8 md:pl-28 lg:px-8 lg:py-28 lg:pr-24">
         {/* <div className="mb-8 inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium uppercase tracking-[0.3em] text-slate-600 shadow-sm">
           Contact
         </div> */}

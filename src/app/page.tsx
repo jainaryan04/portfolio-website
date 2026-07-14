@@ -44,8 +44,8 @@ const Hero = () => {
   ];
   
   return (
-    <div className="px-36 py-12 md:py-24 w-full mx-auto h-[100vh] overflow-hidden bg-white text-black">
-      <div className="flex flex-col md:flex-row gap-8">
+    <div className="mx-auto min-h-screen w-full overflow-hidden bg-white px-4 py-12 text-black sm:px-6 md:px-8 md:py-24 md:pl-28 lg:px-36">
+      <div className="flex flex-col gap-8 md:flex-row">
         <div className="md:w-1/2">
           <div className="inline-block bg-blue-100 px-3 py-1 mb-6 text-sm">
             ARYAN RAMESH JAIN.

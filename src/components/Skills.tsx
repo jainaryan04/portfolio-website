@@ -19,15 +19,35 @@ const Skills: React.FC<SkillsProps> = ({
 }) => {
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent): void => {
-      setPosition({ x: e.clientX, y: e.clientY });
+    const updateIsMobile = () => setIsMobile(window.innerWidth < 768);
+    updateIsMobile();
+
+    window.addEventListener('resize', updateIsMobile);
+
+    return () => {
+      window.removeEventListener('resize', updateIsMobile);
     };
+  }, []);
 
-    window.addEventListener('mousemove', handleMouseMove);
+  useEffect(() => {
+    if (!isMobile) {
+      const handleMouseMove = (e: MouseEvent): void => {
+        setPosition({ x: e.clientX, y: e.clientY });
+      };
 
+      window.addEventListener('mousemove', handleMouseMove);
+
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+      };
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
     if (media.length > 1) {
       intervalRef.current = setInterval(() => {
         setCurrentIndex(prevIndex => (prevIndex + 1) % media.length);
@@ -35,7 +55,6 @@ const Skills: React.FC<SkillsProps> = ({
     }
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [media.length, changeSpeed]);
@@ -47,14 +66,21 @@ const Skills: React.FC<SkillsProps> = ({
 
   return (
     <div
-      className={`absolute z-50 overflow-hidden ${className}`}
-      style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        transform: 'translate(-50%, -50%)',
-        pointerEvents: 'none',
-        transition: 'opacity 0.1s ease-in-out',
-      }}
+      className={`z-50 overflow-hidden ${className} ${isMobile ? 'fixed bottom-6 left-1/2 -translate-x-1/2' : 'absolute'}`}
+      style={
+        isMobile
+          ? {
+              pointerEvents: 'none',
+              transition: 'opacity 0.1s ease-in-out',
+            }
+          : {
+              left: `${position.x}px`,
+              top: `${position.y}px`,
+              transform: 'translate(-50%, -50%)',
+              pointerEvents: 'none',
+              transition: 'opacity 0.1s ease-in-out',
+            }
+      }
     >
       {isVideo ? (
         <video

@@ -1,23 +1,3 @@
-import Link from "next/link";
-import { Briefcase, Code2, Sparkles } from "lucide-react";
-
-const highlights = [
-  {
-    title: "Focus",
-    description: "Product-minded development with a strong eye for usability and detail.",
-    icon: Sparkles,
-  },
-  {
-    title: "Craft",
-    description: "Pixel-precise interfaces combined with reliable full-stack implementation.",
-    icon: Code2,
-  },
-  {
-    title: "Experience",
-    description: "Building client-facing products and internal platforms across fast-moving teams.",
-    icon: Briefcase,
-  },
-];
 
 const experiences = [
   // {
@@ -32,8 +12,8 @@ const experiences = [
     role: "Full-Stack Web Developer Intern",
     company: "Urjacart Energy Labs Pvt Ltd",
     date: "Dec 24 - Aug 25",
-    description:
-      "Built responsive, accessible user interfaces and reusable components for client websites, shaping a polished digital presence across launches.",
+    // description:
+    //   "Built responsive, accessible user interfaces and reusable components for client websites, shaping a polished digital presence across launches.",
     bulletPoints: [
       "Developed and scaled a full-stack eCommerce platform (UrjaCart) using React, Node.js, PostgreSQL, and Razorpay APIs, contributing to 8× revenue growth (240M → 1.92B INR annually).",
       "Built and maintained admin dashboards for product, order, and user management, improving operational efficiency across multiple internal teams.",
@@ -46,7 +26,7 @@ const experiences = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#f7f8fc] text-slate-900">
-      <section className="mx-auto flex max-w-6xl flex-col px-6 py-20 sm:px-10 lg:px-8 lg:py-28 lg:pr-24">
+      <section className="mx-auto flex max-w-6xl flex-col px-4 py-16 sm:px-6 md:px-8 md:pl-28 lg:px-8 lg:py-28 lg:pr-24">
         {/* <div className="mb-8 inline-flex w-fit items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium uppercase tracking-[0.3em] text-slate-600 shadow-sm">
           About
         </div>
