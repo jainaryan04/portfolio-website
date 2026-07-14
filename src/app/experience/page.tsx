@@ -12,8 +12,8 @@ const experiences = [
     role: "Full-Stack Web Developer Intern",
     company: "Urjacart Energy Labs Pvt Ltd",
     date: "Dec 24 - Aug 25",
-    // description:
-    //   "Built responsive, accessible user interfaces and reusable components for client websites, shaping a polished digital presence across launches.",
+    description:
+      "Built and scaled a full-stack eCommerce platform and admin tools using React, Node.js, PostgreSQL, and Razorpay APIs, contributing to major revenue growth and operational efficiency.",
     bulletPoints: [
       "Developed and scaled a full-stack eCommerce platform (UrjaCart) using React, Node.js, PostgreSQL, and Razorpay APIs, contributing to 8× revenue growth (240M → 1.92B INR annually).",
       "Built and maintained admin dashboards for product, order, and user management, improving operational efficiency across multiple internal teams.",
@@ -101,7 +101,7 @@ export default function AboutPage() {
                   </div>
                   <span className="text-sm font-medium text-slate-500">{item.date}</span>
                 </div>
-                <p className="mt-4 text-base leading-7 text-slate-600">{item.description}</p>
+                {/* <p className="mt-4 text-base leading-7 text-slate-600">{item.description}</p> */}
                 {item.bulletPoints && item.bulletPoints.length > 0 && (
                   <ul className="mt-4 space-y-2">
                     {item.bulletPoints.map((bulletPoint) => (
